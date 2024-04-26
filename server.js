@@ -2,13 +2,18 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser')
 const app = express();
-
+const mongoose = require('mongoose');
+const collection = require('./Backend/dbconnection');
 
 app.set('view engine', 'ejs');
 app.use(express.urlencoded({extended:true}));
 app.use(express.json());
 app.use(express.static(path.join(__dirname,'public')));
 app.use(cookieParser());
+
+/*mongoose.connect(`mongodb+srv://${process.env.MONGO_DBCONNECTION}`).then(()=>{
+console.log('Connected successfully');
+});*/
 
 
 
