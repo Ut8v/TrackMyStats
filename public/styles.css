@@ -1,0 +1,33 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #f0f0f0;
+    padding: 10px;
+}
+
+nav {
+    text-align: right;
+}
+
+main {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.post {
+    width: 70%; 
+    background-color: #e0e0e0;
+    padding: 20px;
+    margin-right: 20px;
+}
+
+.profile {
+    width: 25%; 
+    background-color: #d0d0d0;
+    padding: 20px;
+}
