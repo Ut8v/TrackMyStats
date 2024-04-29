@@ -5,7 +5,8 @@ window.onload = function() {
 
     // Update profile info with the username
     const usernamePlaceholder = document.getElementById('usernamePlaceholder');
+    //console.log(username);
     if (username) {
-        usernamePlaceholder.textContent = 'Welcome, ' + username + '!';
+        usernamePlaceholder.textContent = username;
     }
 };
