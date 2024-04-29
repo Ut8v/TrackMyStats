@@ -1,10 +1,10 @@
 const express = require('express');
 const path = require('path');
 const bcrypt = require('bcrypt');
-const cookieParser = require('cookie-parser')
+const cookieParser = require('cookie-parser');
+const jwt = require('jsonwebtoken');
 const app = express();
 const {User} = require('./Backend/dbconnection');
-
 
 app.set('view engine', 'ejs');
 app.use(express.urlencoded({extended:true}));
@@ -30,11 +30,43 @@ app.get('/signup',(req,res)=>{
 
 //for home page
 app.get('/home',(req,res)=>{
-    res.render('home')
+    const token = req.query.token;
+    const username = req.query.username;
+    // Render the home page with the username and token
+    res.render('home', { username: username, token: token });
 })
 
-//to signup
+// Route to handle mystat page for each user
+app.get('/mystat/:username', (req, res) => {
+    const username = req.params.username;
+    const token = req.query.token;
+    //console.log('token =', token);
+    const verified = jwt.verify(token, process.env.Secret_Key);
+    console.log(verified);
+    if(verified.username !== username ){
+        res.send('no access')
+    }
+    else {
+        res.render('posts',{ username: username, token: token})
+    }
+});
 
+app.get('/addstats/:username',(req,res)=>{
+    const username = req.params.username;
+    const token = req.query.token;
+    //console.log('token =', token);
+    const verified = jwt.verify(token, process.env.Secret_Key);
+    console.log(verified);
+    if(verified.username !== username ){
+        res.send('no access')
+    }
+    else {
+        res.render('addstats',{ username: username, token: token})
+    }
+})
+
+
+//to signup
 app.post('/signup', async (req,res)=>{
      //save
     const signup = {
@@ -49,14 +81,15 @@ app.post('/signup', async (req,res)=>{
     User.findOne({ email: signup.email, password: signup.password }).exec()
     .then(userExists => {
         if (userExists) {
-        console.log('Username:', userExists.username);
-        res.redirect('/home?username=' + userExists.username);
+            const token = jwt.sign({username:userExists.username},process.env.Secret_Key,{expiresIn:process.env.expiresIn })
+            res.redirect('/home?token=' + token + '&username=' + userExists.username)
         } else {
             const newUser = new User(signup);
             console.log(newUser);
-            newUser.save();
-            //res.redirect('/home?username=' + signup.username);
-            res.render('signin');
+            newUser.save().then(()=>{
+                const token = jwt.sign({username:newUser.username},process.env.Secret_Key,{expiresIn:process.env.expiresIn })
+                res.redirect('/home?token=' + token + '&username=' + newUser.username)
+            }).catch(err=> console.log(err));
         }
     })
     .catch(err => {
@@ -72,21 +105,18 @@ app.post('/signin', async (req, res) => {
             email: req.body.email,
             password: req.body.password
         };
-
         //console.log(signin.email);
-
         // Find user by email
         const user = await User.findOne({ email: signin.email });
-
         if (!user) {
             return res.render('usernotfound');
         }
-
         // Compare passwords
         const passwordMatch = await bcrypt.compare(signin.password, user.password);
-
         if (passwordMatch) {
-            res.redirect('/home?username=' + user.username);
+            const token = jwt.sign({username:user.username},process.env.Secret_Key,{expiresIn:process.env.expiresIn })
+            //console.log(token);
+            res.redirect('/home?token=' + token + '&username=' + user.username)
         } else {
             res.send('Incorrect username or password');
         }
@@ -96,9 +126,7 @@ app.post('/signin', async (req, res) => {
     }
 });
 
-
-
-
+//
 app.listen(3000,()=>{
     console.log('server is running');
 })
