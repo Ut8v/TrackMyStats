@@ -253,6 +253,7 @@ app.post('/delete',(req,res)=>{
     if (verified.username !== username) {
         return res.status(403).json({ error: 'Forbidden' });
     }
+    //return single promise
     Promise.all([
         Stat.findOneAndDelete({ _id: statId }),
         Game.findOneAndDelete({ _id: gameId })
