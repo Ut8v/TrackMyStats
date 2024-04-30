@@ -132,6 +132,7 @@ app.post('/savestat', async (req, res) => {
     try {
         const { Player, token, gameDate, location, opponent, outcome, pointsScored, assists, rebounds, steals, blocks, fouls } = req.body;
         // Find the user ID
+        
         //console.log(token);
         const verified = jwt.verify(token, process.env.Secret_Key);
         if(verified.username !== Player ){
