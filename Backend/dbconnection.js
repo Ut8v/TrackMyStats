@@ -22,8 +22,8 @@ const gameSchema = new mongoose.Schema({
 
 //schema for player stats
 const statSchema = new mongoose.Schema({
-    player: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    game: { type: mongoose.Schema.Types.ObjectId, ref: 'Game', required: true },
+    player: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    game: { type: mongoose.Schema.Types.ObjectId, ref: 'Game' },
     pointsScored: { type: Number, required: true },
     assists: { type: Number, required: true },
     rebounds: { type: Number, required: true },

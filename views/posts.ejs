@@ -5,11 +5,92 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My-Stats</title>
     <script src="index.js"></script>
+<style>
+.card {
+    width: 500px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    overflow: hidden;
+    margin: 10px;
+    margin-left: 30%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card .card-header {
+    background-color: #f1f1f1;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+.card .card-header h2 {
+    margin: 0;
+}
+
+.card .card-body {
+    padding: 20px;
+}
+
+</style>
 </head>
 <body>
-    <h1>My Stats</h1>
+    <header>
+        <h1><%= username.toUpperCase() %> all time stat</h1>
+            <nav>
+                <a href="/home?username=<%= username %>&token=<%= token %>">Home</a>
+            </nav>
+    </header>
     <button>
         <a href="/addstats/<%= username %>?token=<%= token %>">Add New Stat</a>
     </button>
+    
+    <div id="stats-container">
+    <div id="token-data" data-username="<%= username %>" data-token="<%= token %>"></div>
+
+    </div>
+
+    <script>
+    const tokenDataElement = document.getElementById('token-data');
+    const username = tokenDataElement.getAttribute('data-username');
+    const token = tokenDataElement.getAttribute('data-token');
+    // Fetch stats from the server and dynamically render them
+    fetch(`/stats/${username}`, {
+    headers: {
+        'Authorization': `Bearer ${token}` 
+    }
+    })
+    .then(response => response.json())
+    .then(stats => {
+        console.log(stats);
+        const statsContainer = document.getElementById('stats-container');
+        statsContainer.innerHTML = '';
+        // Render each stat
+        stats.forEach(stat => {
+            const statElement = document.createElement('div');
+            statElement.classList.add('card');
+            statElement.innerHTML = `
+            <div class="card-header">
+            <h2>Player: <%=username %></h2>
+            <p>Game: Basketball</p>
+            </div>
+            <div class="card-body">
+            <p>Date: ${stat.game.date}</p>
+            <p>Location: ${stat.game.location}</p>
+            <p>Opponent: ${stat.game.opponent}</p>
+            <p>Points Scored: ${stat.pointsScored}</p>
+            <p>Assists: ${stat.assists}</p>
+            <p>Rebounds: ${stat.rebounds}</p>
+            <p>Steals: ${stat.steals}</p>
+            <p>Blocks: ${stat.blocks}</p>
+            <p>Fouls: ${stat.fouls}</p>
+            <p>Outcome: ${stat.game.outcome}</p>
+        </div>
+            `;
+            statsContainer.appendChild(statElement);
+        });
+        })
+        .catch(error => {
+            console.error('Error fetching stats:', error);
+        });
+    </script>
 </body>
 </html>

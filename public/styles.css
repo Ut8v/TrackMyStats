@@ -31,3 +31,23 @@ main {
     background-color: #d0d0d0;
     padding: 20px;
 }
+
+.post-item {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    background-color: #f9f9f9;
+}
+
+.post-item h2 {
+    margin-top: 0;
+    font-size: 20px;
+    color: #333;
+}
+
+.post-item p {
+    margin: 10px 0;
+    font-size: 16px;
+    color: #666;
+}

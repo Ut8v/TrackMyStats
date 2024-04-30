@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add New Stat</title>
-    <style>
-body {
+    <title>Save Player Stats</title>
+<style>
+    body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
@@ -13,7 +13,7 @@ body {
 }
 
 .container {
-    max-width: 600px;
+    max-width: 500px;
     margin: 50px auto;
     padding: 20px;
     background-color: #fff;
@@ -34,7 +34,10 @@ label {
     font-weight: bold;
 }
 
-input[type="number"] {
+input[type="date"],
+input[type="text"],
+input[type="number"],
+select {
     width: 100%;
     padding: 10px;
     border: 1px solid #ccc;
@@ -55,13 +58,42 @@ button {
 button:hover {
     background-color: #0056b3;
 }
+
 </style>
 </head>
 <body>
     <div class="container">
-        <h1>Add new stat for <%=username%></h1>
-        
+        <h1>Stat for <%= username %></h1>
+        <nav>
+            <a href="/home?username=<%= username %>&token=<%= token %>">Home</a>
+        </nav>
         <form action="/savestat" method="POST">
+            <div class="form-group">
+                <label for="Player">Player:</label>
+                <input hidden type="text" id="Player" name="Player" value="<%= username%>" required>
+                <input hidden type="text" id="Token" name="token" value="<%= token%>" required>
+                <input type="text" id="Player" name="Player" disabled value="<%= username%>" required>
+            </div>
+            <div class="form-group">
+                <label for="gameDate">Game Date:</label>
+                <input type="date" id="gameDate" name="gameDate" required>
+            </div>
+            <div class="form-group">
+                <label for="location">Location:</label>
+                <input type="text" id="location" name="location" required>
+            </div>
+            <div class="form-group">
+                <label for="opponent">Opponent:</label>
+                <input type="text" id="opponent" name="opponent" required>
+            </div>
+            <div class="form-group">
+                <label for="outcome">Outcome:</label>
+                <select id="outcome" name="outcome" required>
+                    <option value="win">Win</option>
+                    <option value="loss">Loss</option>
+                    <option value="draw">Draw</option>
+                </select>
+            </div>
             <div class="form-group">
                 <label for="pointsScored">Points Scored:</label>
                 <input type="number" id="pointsScored" name="pointsScored" required>
@@ -86,9 +118,9 @@ button:hover {
                 <label for="fouls">Fouls:</label>
                 <input type="number" id="fouls" name="fouls" required>
             </div>
-            
-            <button type="submit">Save Stat</button>
+            <button type="submit">Save Stats</button>
         </form>
     </div>
 </body>
 </html>
+
