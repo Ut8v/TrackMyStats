@@ -2,19 +2,22 @@ window.onload = function() {
     // Extract username from URL query parameter
     const urlParams = new URLSearchParams(window.location.search);
     const username = urlParams.get('username');
-
     const usernamePlaceholder = document.getElementById('usernamePlaceholder');
     //console.log(username);
     if (username) {
         usernamePlaceholder.textContent = username;
     }
 };
-
+const tokenDataElement = document.getElementById('token-data');
+const token = tokenDataElement.getAttribute('data-token');
+console.log(token);
 document.addEventListener('DOMContentLoaded', async () => {
     // Function to fetch posts
-    const fetchPosts = async () => {
+    const fetchPosts = async (token) => {
         try {
-            const response = await fetch('/allstats');
+            const response = await fetch(`/allstats/${username}?token=${token}`,{
+            })
+
             const data = await response.json();
             return data;
         } catch (error) {
@@ -45,19 +48,18 @@ document.addEventListener('DOMContentLoaded', async () => {
                 <p>Location: ${post.game.location}</p>
                 <p>Outcome: ${post.game.outcome}</p>
                 <p>Opponent: ${post.game.opponent}</p>
-                    
                 `;
                 postContainer.appendChild(postElement);
             });
         }
     };
 
-    const posts = await fetchPosts();
+    const posts = await fetchPosts(token);
     renderPosts(posts);
 
     const homeButton = document.querySelector('.nav-home');
     homeButton.addEventListener('click', async () => {
-        const posts = await fetchPosts();
+        const posts = await fetchPosts(token);
         renderPosts(posts);
     });
 });
