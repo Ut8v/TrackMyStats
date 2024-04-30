@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", function() {
 const tokenDataElement = document.getElementById("token-data");
 if (tokenDataElement) {
 const username = tokenDataElement.getAttribute('data-username');
+document.getElementById('user-name').textContent = `${username.toUpperCase()} All Time Stats`;
 const token = tokenDataElement.getAttribute('data-token');
     // Fetch stats from the server and dynamically render them
     fetch(`/stats/${username}`, {
@@ -21,7 +22,7 @@ const token = tokenDataElement.getAttribute('data-token');
             statElement.classList.add('card');
             statElement.innerHTML = `
             <div class="card-header">
-            <h2>Player: <%=username %></h2>
+            <h2>Player: ${username}</h2>
             <p>Game: Basketball</p>
             </div>
             <div class="card-body">
