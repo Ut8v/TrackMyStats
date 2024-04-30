@@ -103,7 +103,7 @@ app.post('/signin', async (req, res) => {
 app.get('/mystat/:username', (req, res) => {
     const username = req.params.username;
     const token = req.query.token;
-    console.log('token =', token);
+    //console.log('token =', token);
     const verified = jwt.verify(token, process.env.Secret_Key);
     //console.log(verified);
     if(verified.username !== username ){
@@ -183,9 +183,9 @@ app.get('/stats/:username', async (req, res) => {
         const user = await User.findOne({ username: username });
         if (user) {
             const userId = user._id;
-            console.log(userId);
+           // console.log(userId);
             const stats = await Stat.find({ player: userId }).populate('game');
-            console.log(stats);
+           // console.log(stats);
             res.json(stats);
         } else {
             res.status(404).json({ error: 'User not found' });
@@ -237,6 +237,37 @@ app.get('/allstats', async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
+//delete stats
+app.post('/delete',(req,res)=>{
+    const statId = req.body.statId;
+    const gameId = req.body.gameId;
+    const token = req.headers.authorization;
+    const username = req.headers.username;
+    //console.log('statid =',statId);
+    //console.log('gameid =',gameId);
+    if(!token || !username ){
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+    //verify the jwt token
+    const verified = jwt.verify(token.replace('Bearer ', ''), process.env.Secret_Key);
+    if (verified.username !== username) {
+        return res.status(403).json({ error: 'Forbidden' });
+    }
+    Promise.all([
+        Stat.findOneAndDelete({ _id: statId }),
+        Game.findOneAndDelete({ _id: gameId })
+    ])
+    .then(([deletedStat, deletedGame]) => {
+        if (!deletedStat || !deletedGame) {
+            return res.status(404).send('Stat or Game not found');
+        }
+        res.send('Stat and Game deleted successfully');
+    })
+    .catch(err => {
+        console.error('Error deleting stat or game:', err);
+        res.status(500).send('Error deleting stat or game');
+    });
+})
 
 
 //
