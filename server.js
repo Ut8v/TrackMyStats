@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
 const app = express();
-const {User} = require('./Backend/dbconnection');
+const {User,Stat,Game} = require('./Backend/dbconnection');
 
 app.set('view engine', 'ejs');
 app.use(express.urlencoded({extended:true}));
@@ -36,35 +36,6 @@ app.get('/home',(req,res)=>{
     res.render('home', { username: username, token: token });
 })
 
-// Route to handle mystat page for each user
-app.get('/mystat/:username', (req, res) => {
-    const username = req.params.username;
-    const token = req.query.token;
-    //console.log('token =', token);
-    const verified = jwt.verify(token, process.env.Secret_Key);
-    console.log(verified);
-    if(verified.username !== username ){
-        res.send('no access')
-    }
-    else {
-        res.render('posts',{ username: username, token: token})
-    }
-});
-
-app.get('/addstats/:username',(req,res)=>{
-    const username = req.params.username;
-    const token = req.query.token;
-    //console.log('token =', token);
-    const verified = jwt.verify(token, process.env.Secret_Key);
-    console.log(verified);
-    if(verified.username !== username ){
-        res.send('no access')
-    }
-    else {
-        res.render('addstats',{ username: username, token: token})
-    }
-})
-
 
 //to signup
 app.post('/signup', async (req,res)=>{
@@ -94,7 +65,7 @@ app.post('/signup', async (req,res)=>{
     })
     .catch(err => {
         console.error(err);
-        res.status(500).send('Internal Server Error'); // Handle error appropriately
+        res.status(500).send('Internal Server Error'); 
     });
 })
 
@@ -125,6 +96,122 @@ app.post('/signin', async (req, res) => {
         res.status(500).send('Internal Server Error');
     }
 });
+// Route to handle mystat page for each user
+app.get('/mystat/:username', (req, res) => {
+    const username = req.params.username;
+    const token = req.query.token;
+    //console.log('token =', token);
+    const verified = jwt.verify(token, process.env.Secret_Key);
+    //console.log(verified);
+    if(verified.username !== username ){
+        res.send('no access')
+    }
+    else {
+        res.render('posts',{ username: username, token: token})
+    }
+});
+
+app.get('/addstats/:username',(req,res)=>{
+    const username = req.params.username;
+    const token = req.query.token;
+    //console.log('token =', token);
+    const verified = jwt.verify(token, process.env.Secret_Key);
+    //console.log(verified);
+    if(verified.username !== username ){
+        res.send('no access')
+    }
+    else {
+        res.render('addstats',{ username: username, token: token})
+    }
+})
+
+app.post('/savestat', async (req, res) => {
+    try {
+        const { Player, token, gameDate, location, opponent, outcome, pointsScored, assists, rebounds, steals, blocks, fouls } = req.body;
+        // Find the user ID
+        const user = await User.findOne({ username: Player });
+        if (!user) {
+            return res.status(404).send('User not found');
+        }
+        // Create a new game
+        const newGame = new Game({
+            date: gameDate,
+            location: location,
+            opponent: opponent,
+            outcome: outcome
+        });
+        // Save the game
+        await newGame.save();
+        // Create a new stat associated with the game and user
+        const stat = new Stat({
+            player: user._id, 
+            game: newGame._id, 
+            pointsScored: pointsScored,
+            assists: assists,
+            rebounds: rebounds,
+            steals: steals,
+            blocks: blocks,
+            fouls: fouls
+        });
+        // Save the stat
+        await stat.save();
+        // Render the posts page
+        res.redirect(`/mystat/${Player}?token=${token}`);
+    } catch (err) {
+        console.log(err);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+app.get('/stats/:username', async (req, res) => {
+    try {
+        const username = req.params.username;
+        const user = await User.findOne({ username: username });
+        if (user) {
+            const userId = user._id;
+            console.log(userId);
+            const stats = await Stat.find({ player: userId }).populate('game');
+            console.log(stats);
+            res.json(stats);
+        } else {
+            res.status(404).json({ error: 'User not found' });
+        }
+    } catch (err) {
+        console.error('Error fetching user stats:', err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+
+//for stats to show in the home page
+app.get('/allstats', async (req, res) => {
+    try {
+        // Aggregate to get random stats
+        const randomStats = await Stat.aggregate([{ $sample: { size: 10 } }]);
+        
+        // Extract player and game IDs
+        const playerIds = randomStats.map(stat => stat.player);
+        const gameIds = randomStats.map(stat => stat.game);
+
+        // Populate player and game fields
+        const populatedStats = await Promise.all([
+            User.find({ _id: { $in: playerIds } }).select('-password -email'),
+            Game.find({ _id: { $in: gameIds } })
+        ]);
+
+        // Map player and game data to stats
+        randomStats.forEach((stat, index) => {
+            stat.player = populatedStats[0].find(user => user._id.equals(stat.player));
+            stat.game = populatedStats[1].find(game => game._id.equals(stat.game));
+        });
+
+        res.json(randomStats);
+    } catch (err) {
+        console.error('Error fetching random stats:', err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
 
 //
 app.listen(3000,()=>{

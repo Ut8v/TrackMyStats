@@ -9,17 +9,17 @@
 <body>
     <header>
         <h1>Track My Stats</h1>
+        <button class="nav-home">Home</button>
         <nav>
-            <a href="/logout">logout</a>
+            <a href="/logout">Logout</a>
         </nav>
     </header>
     <main>
         <div class="post">
-            <h1>This is where we will fetch the posts</h1>
         </div>
         <div class="profile">
             <h2>Profile Info</h2>
-            <p id="usernamePlaceholder"></p>
+            <p id="usernamePlaceholder" ><%= username %></p>
             <button>
                 <a href="/mystat/<%= username %>?token=<%= token %>">Posts</a>
             </button>
