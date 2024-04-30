@@ -2,55 +2,41 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
+    background-color: #f4f4f4;
 }
 
-header {
-    background-color: #f0f0f0;
-    padding: 10px;
-}
-
-nav {
-    text-align: right;
-}
-
-main {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
-}
-
-.post {
-    width: 70%; 
-    background-color: #e0e0e0;
+.container {
+    max-width: 500px;
+    margin: 50px auto;
     padding: 20px;
-    margin-right: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.profile {
-    width: 25%; 
-    background-color: #d0d0d0;
-    padding: 20px;
+h1 {
+    text-align: center;
 }
 
-.post-item {
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    padding: 20px;
+.form-group {
     margin-bottom: 20px;
-    background-color: #f9f9f9;
 }
 
-.post-item h2 {
-    margin-top: 0;
-    font-size: 20px;
-    color: #333;
+label {
+    display: block;
+    font-weight: bold;
 }
 
-.post-item p {
-    margin: 10px 0;
-    font-size: 16px;
-    color: #666;
+input[type="date"],
+input[type="text"],
+input[type="number"],
+select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
 }
+
 .homebtn {
     display: inline-block;
     background-color: #4CAF50; 
@@ -75,9 +61,9 @@ main {
     background-color: #45a049; 
 }
 
-.logoutbtn {
+.savestat {
     display: inline-block;
-    background-color: crimson; 
+    background-color: #4CAF50; 
     border: none;
     color: white;
     padding: 0px 32px;
@@ -90,11 +76,13 @@ main {
     border-radius: 10px;
 }
 
-.logoutbtn a {
+.savestat a {
     color: white;
     text-decoration: none;
 }
 
-.logoutbtn:hover {
-    background-color: red; 
+.savestat:hover {
+    background-color: #45a049; 
 }
+
+

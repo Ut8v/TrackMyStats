@@ -10,12 +10,17 @@ window.onload = function() {
 };
 const tokenDataElement = document.getElementById('token-data');
 const token = tokenDataElement.getAttribute('data-token');
-console.log(token);
+const username = tokenDataElement.getAttribute('data-username');
+console.log(username);
 document.addEventListener('DOMContentLoaded', async () => {
     // Function to fetch posts
     const fetchPosts = async (token) => {
         try {
-            const response = await fetch(`/allstats/${username}?token=${token}`,{
+            const response = await fetch(`/allstats`,{
+                headers:{
+                    'Authorization': `Bearer ${token}`,
+                    'Username': `${username}`
+                }
             })
 
             const data = await response.json();
@@ -57,7 +62,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const posts = await fetchPosts(token);
     renderPosts(posts);
 
-    const homeButton = document.querySelector('.nav-home');
+    const homeButton = document.querySelector('.homebtn');
     homeButton.addEventListener('click', async () => {
         const posts = await fetchPosts(token);
         renderPosts(posts);
