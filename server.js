@@ -100,7 +100,7 @@ app.post('/signin', async (req, res) => {
 app.get('/mystat/:username', (req, res) => {
     const username = req.params.username;
     const token = req.query.token;
-    //console.log('token =', token);
+    console.log('token =', token);
     const verified = jwt.verify(token, process.env.Secret_Key);
     //console.log(verified);
     if(verified.username !== username ){
@@ -129,6 +129,11 @@ app.post('/savestat', async (req, res) => {
     try {
         const { Player, token, gameDate, location, opponent, outcome, pointsScored, assists, rebounds, steals, blocks, fouls } = req.body;
         // Find the user ID
+        //console.log(token);
+        const verified = jwt.verify(token, process.env.Secret_Key);
+        if(verified.username !== username ){
+            res.send('no access')
+        }//else {
         const user = await User.findOne({ username: Player });
         if (!user) {
             return res.status(404).send('User not found');
@@ -157,15 +162,21 @@ app.post('/savestat', async (req, res) => {
         await stat.save();
         // Render the posts page
         res.redirect(`/mystat/${Player}?token=${token}`);
+    //}
     } catch (err) {
         console.log(err);
         res.status(500).send('Internal Server Error');
     }
 });
-
+//to get individual stat
 app.get('/stats/:username', async (req, res) => {
     try {
+        const token = req.query.token;
         const username = req.params.username;
+        const verified = jwt.verify(token, process.env.Secret_Key);
+        if(verified.username !== username ){
+            res.send('no access')
+        }//else {
         const user = await User.findOne({ username: username });
         if (user) {
             const userId = user._id;
@@ -176,6 +187,7 @@ app.get('/stats/:username', async (req, res) => {
         } else {
             res.status(404).json({ error: 'User not found' });
         }
+    //}
     } catch (err) {
         console.error('Error fetching user stats:', err);
         res.status(500).json({ error: 'Internal Server Error' });
@@ -186,9 +198,16 @@ app.get('/stats/:username', async (req, res) => {
 //for stats to show in the home page
 app.get('/allstats', async (req, res) => {
     try {
-        // Aggregate to get random stats
+        const token = req.query.token;
+        const username = req.params.username;
+
+        console.log('username =',username);
+        const verified = jwt.verify(token, process.env.Secret_Key);
+        if(verified.username !== username ){
+            res.send('no access')
+        }else {
         const randomStats = await Stat.aggregate([{ $sample: { size: 10 } }]);
-        
+        console.log(randomStats);
         // Extract player and game IDs
         const playerIds = randomStats.map(stat => stat.player);
         const gameIds = randomStats.map(stat => stat.game);
@@ -204,7 +223,7 @@ app.get('/allstats', async (req, res) => {
             stat.player = populatedStats[0].find(user => user._id.equals(stat.player));
             stat.game = populatedStats[1].find(game => game._id.equals(stat.game));
         });
-
+        }
         res.json(randomStats);
     } catch (err) {
         console.error('Error fetching random stats:', err);
