@@ -134,7 +134,7 @@ app.post('/savestat', async (req, res) => {
         // Find the user ID
         //console.log(token);
         const verified = jwt.verify(token, process.env.Secret_Key);
-        if(verified.username !== username ){
+        if(verified.username !== Player ){
             res.send('no access')
         }//else {
         const user = await User.findOne({ username: Player });
