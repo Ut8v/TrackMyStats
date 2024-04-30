@@ -4,42 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My-Stats</title>
+    <link rel="stylesheet" href="../mystat.css">
     <script src="index.js"></script>
-<style>
-.card {
-    width: 500px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    overflow: hidden;
-    margin: 10px;
-    margin-left: 30%;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.card .card-header {
-    background-color: #f1f1f1;
-    padding: 10px;
-    border-bottom: 1px solid #ccc;
-}
-
-.card .card-header h2 {
-    margin: 0;
-}
-
-.card .card-body {
-    padding: 20px;
-}
-
-</style>
 </head>
 <body>
     <header>
         <h1><%= username.toUpperCase() %> all time stat</h1>
             <nav>
+                <button class="homebtn">
                 <a href="/home?username=<%= username %>&token=<%= token %>">Home</a>
+                </button>
             </nav>
     </header>
-    <button>
+    <button class="addnewbtn">
         <a href="/addstats/<%= username %>?token=<%= token %>">Add New Stat</a>
     </button>
     
@@ -83,7 +60,7 @@
             <p>Blocks: ${stat.blocks}</p>
             <p>Fouls: ${stat.fouls}</p>
             <p>Outcome: ${stat.game.outcome}</p>
-        </div>
+            </div>
             `;
             statsContainer.appendChild(statElement);
         });

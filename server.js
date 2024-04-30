@@ -36,6 +36,9 @@ app.get('/home',(req,res)=>{
     res.render('home', { username: username, token: token });
 })
 
+app.get('/logout',(req,res)=>{
+    res.render('landing')
+})
 
 //to signup
 app.post('/signup', async (req,res)=>{
@@ -171,9 +174,9 @@ app.post('/savestat', async (req, res) => {
 //to get individual stat
 app.get('/stats/:username', async (req, res) => {
     try {
-        const token = req.query.token;
+        const token = req.headers.authorization;
         const username = req.params.username;
-        const verified = jwt.verify(token, process.env.Secret_Key);
+        const verified = jwt.verify(token.replace('Bearer ', ''), process.env.Secret_Key);
         if(verified.username !== username ){
             res.send('no access')
         }//else {
@@ -198,16 +201,20 @@ app.get('/stats/:username', async (req, res) => {
 //for stats to show in the home page
 app.get('/allstats', async (req, res) => {
     try {
-        const token = req.query.token;
-        const username = req.params.username;
-
-        console.log('username =',username);
-        const verified = jwt.verify(token, process.env.Secret_Key);
-        if(verified.username !== username ){
-            res.send('no access')
-        }else {
+        const token = req.headers.authorization;
+        const username = req.headers.username;
+        //console.log('username =',username);
+        //console.log('token =',token);
+        if(!token || !username ){
+            return res.status(401).json({ error: 'Unauthorized' });
+        }
+        //verify the jwt token
+        const verified = jwt.verify(token.replace('Bearer ', ''), process.env.Secret_Key);
+        if (verified.username !== username) {
+            return res.status(403).json({ error: 'Forbidden' });
+        }
         const randomStats = await Stat.aggregate([{ $sample: { size: 10 } }]);
-        console.log(randomStats);
+        //console.log(randomStats);
         // Extract player and game IDs
         const playerIds = randomStats.map(stat => stat.player);
         const gameIds = randomStats.map(stat => stat.game);
@@ -223,8 +230,8 @@ app.get('/allstats', async (req, res) => {
             stat.player = populatedStats[0].find(user => user._id.equals(stat.player));
             stat.game = populatedStats[1].find(game => game._id.equals(stat.game));
         });
-        }
         res.json(randomStats);
+        
     } catch (err) {
         console.error('Error fetching random stats:', err);
         res.status(500).json({ error: 'Internal Server Error' });

@@ -4,69 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Save Player Stats</title>
-<style>
-    body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f4;
-}
-
-.container {
-    max-width: 500px;
-    margin: 50px auto;
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-h1 {
-    text-align: center;
-}
-
-.form-group {
-    margin-bottom: 20px;
-}
-
-label {
-    display: block;
-    font-weight: bold;
-}
-
-input[type="date"],
-input[type="text"],
-input[type="number"],
-select {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-
-button {
-    display: block;
-    width: 100%;
-    padding: 10px;
-    color: #fff;
-    background-color: #007bff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-button:hover {
-    background-color: #0056b3;
-}
-
-</style>
+    <link rel="stylesheet" href="../addstats.css">
 </head>
 <body>
+        <button class="homebtn">
+        <a href="/home?username=<%= username %>&token=<%= token %>">Home</a>
+        </button>
     <div class="container">
         <h1>Stat for <%= username %></h1>
-        <nav>
-            <a href="/home?username=<%= username %>&token=<%= token %>">Home</a>
-        </nav>
         <form action="/savestat" method="POST">
             <div class="form-group">
                 <label for="Player">Player:</label>
@@ -118,7 +63,7 @@ button:hover {
                 <label for="fouls">Fouls:</label>
                 <input type="number" id="fouls" name="fouls" required>
             </div>
-            <button type="submit">Save Stats</button>
+            <button type="submit" class="savestat">Save Stats</button>
         </form>
     </div>
 </body>
