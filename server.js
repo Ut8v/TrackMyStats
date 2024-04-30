@@ -48,7 +48,7 @@ app.post('/signup', async (req,res)=>{
         email : req.body.email,
         password : req.body.password
     }
-    const hashedPassword = await bcrypt.hash(signup.password,process.env.BCRYPT_COST_FACTOR);
+    const hashedPassword = await bcrypt.hash(signup.password,Number(process.env.BCRYPT_COST_FACTOR));
     signup.password = hashedPassword;
     //console.log(signup.username);
     //check if user already exists
@@ -59,7 +59,7 @@ app.post('/signup', async (req,res)=>{
             res.redirect('/home?token=' + token + '&username=' + userExists.username)
         } else {
             const newUser = new User(signup);
-            console.log(newUser);
+            //console.log(newUser);
             newUser.save().then(()=>{
                 const token = jwt.sign({username:newUser.username},process.env.Secret_Key,{expiresIn:process.env.expiresIn })
                 res.redirect('/home?token=' + token + '&username=' + newUser.username)
@@ -132,7 +132,7 @@ app.post('/savestat', async (req, res) => {
     try {
         const { Player, token, gameDate, location, opponent, outcome, pointsScored, assists, rebounds, steals, blocks, fouls } = req.body;
         // Find the user ID
-        
+
         //console.log(token);
         const verified = jwt.verify(token, process.env.Secret_Key);
         if(verified.username !== Player ){
